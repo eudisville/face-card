@@ -1,0 +1,66 @@
+.generator {
+    margin-top: 20px;
+}
+
+.model {
+    background-color: rgb(221, 245, 255);
+    border: 1px solid rgb(0, 131, 187);
+    height: 100px;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    border-radius: 10px;
+}
+
+.model-items {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.model-text {
+    color: rgb(0, 98, 218);
+}
+
+.model-text p {
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.model-items button {
+    padding: 10px 15px;
+    background-color: rgb(0, 98, 218);
+    color: white;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.model-items button:hover {
+    background-color: black;
+    transition: .3s;
+}
+
+.generator-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 40px;
+    width: 100%;
+}
+
+.generator-main button {
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: none;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+}
+
+.input-section {
+    border: 1px solid gainsboro;
+    padding: 10px 15px;
+    border-radius: 5px;
+}

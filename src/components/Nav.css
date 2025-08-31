@@ -1,0 +1,60 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 10vh;
+    border: 1px solid gainsboro;
+}
+
+.logo h5 {
+    font-size: 18px;
+}
+
+.logo p {
+    font-size: 12px;
+}
+
+.links a{
+    margin: 20px;
+    text-decoration: none;
+    font-size: 14px;
+    color: rgb(121, 121, 121);
+}
+
+.right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.logout button {
+    background-color: rgb(255, 255, 255);
+    padding: 8px 15px;
+    border:  1px solid gainsboro;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logout button:hover {
+    background-color: rgb(216, 0, 0);
+    color: white;
+    transition: .3s;
+}
+
+.account {
+    background-color: rgb(238, 238, 238);
+    padding: 8px 15px;
+    border-radius: 50px;
+}
+
+.account p {
+    font-size: 12px;
+}
