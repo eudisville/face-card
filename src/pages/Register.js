@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { supabase } from '../supabase/supabaseClient';
+import { Link } from 'react-router-dom';
 import './styles/styles.css';
-import { Link, useNavigate } from 'react-router-dom';
 
 function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState(''); // Nouvelle variable d'état pour le nom
+  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -18,14 +17,12 @@ function Register() {
     setError(null);
     setSuccessMessage(null);
 
-    // L'ajout du nom se fait via l'objet "options" de la méthode signUp.
-    // Vous pouvez y ajouter d'autres champs comme des métadonnées utilisateur.
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
-          full_name: name, // Ajout du nom complet dans les données utilisateur
+          full_name: name,
         },
       },
     });
@@ -35,8 +32,7 @@ function Register() {
     if (error) {
       setError(error.message);
     } else {
-      setSuccessMessage('Inscription réussie ! Veuillez vérifier votre boîte e-mail pour confirmer votre compte.')
-      navigate('/');;
+      setSuccessMessage('Inscription réussie ! Veuillez vérifier votre boîte e-mail pour confirmer votre compte.');
     }
   };
 
@@ -47,7 +43,6 @@ function Register() {
           <h2>FaceCard</h2>
           <p>App Générateur d'autocollants</p>
         </div>
-
         <form onSubmit={handleRegister}>
           <h5>Nom d'utilisateur</h5>
           <input
@@ -82,7 +77,6 @@ function Register() {
             {loading ? 'Inscription...' : "S'inscrire"}
           </button>
         </form>
-
         <Link to="/login">Déjà un compte ? Connectez-vous</Link>
       </div>
     </div>

@@ -1,12 +1,34 @@
-import React, { useContext } from 'react';
-import { AuthContext } from '../context/AuthContext'; // Correction: Import AuthContext au lieu d'AuthProvider
+import React, { useContext, useState, useEffect } from 'react';
+import { AuthContext } from '../context/AuthContext';
+import { supabase } from '../supabase/supabaseClient';
+import { Link } from 'react-router-dom';
 import './Nav.css';
 
 function Nav() {
-  const { session } = useContext(AuthContext); // Correction: Utilisation de AuthContext
+  const { session } = useContext(AuthContext);
+  const [profileName, setProfileName] = useState('Chargement...');
 
-  // Accéder aux données de l'utilisateur connecté
-  const username = session?.user?.user_metadata?.display_name || 'Utilisateur';
+  useEffect(() => {
+    async function getProfile() {
+      if (session) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('name')
+          .eq('id', session.user.id)
+          .single();
+
+        if (error) {
+          console.error('Erreur lors de la récupération du profil:', error);
+          setProfileName('Utilisateur');
+        } else if (data) {
+          setProfileName(data.name || 'Utilisateur');
+        }
+      } else {
+        setProfileName('Utilisateur');
+      }
+    }
+    getProfile();
+  }, [session]);
 
   return (
     <nav>
@@ -14,11 +36,14 @@ function Nav() {
         <h5>FaceCard</h5>
         <p>Service Professionnel</p>
       </div>
-
       <div className="right">
-        <div className="account">
-          <h5>{username}</h5>
-        </div>
+        {session ? (
+          <div className="account">
+            <h5>{profileName}</h5>
+          </div>
+        ) : (
+          <Link to="/login">Se connecter</Link>
+        )}
       </div>
     </nav>
   );

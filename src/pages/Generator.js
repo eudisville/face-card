@@ -165,20 +165,22 @@ function Generator() {
           doc.setFont('Helvetica', 'bold');
           doc.setTextColor(0, 0, 255);
 
-          doc.setFontSize(8);
+          doc.setFontSize(5);
           doc.text((eleve["nom ecole"] || '').toUpperCase(), currentX + stickerWidth / 2, currentY + 0.8, { align: 'center' });
-          doc.text((eleve.slogan || '').toUpperCase(), currentX + stickerWidth / 2, currentY + stickerHeight + 0.10, { align: 'center' });
 
-          doc.setFontSize(10);
-          doc.text(`${(eleve.nom || '').toUpperCase()}`, currentX + 3.5, currentY + 2.0);
-          doc.text(`${(eleve.prenoms || '').toUpperCase()}`, currentX + 3.5, currentY + 2.5);
-
-          doc.setFontSize(10);
-          doc.text(`${matiere.toUpperCase()}`, currentX + 3.5, currentY + 3.0);
-          doc.text(`${(eleve.classe || '').toUpperCase()}`, currentX + 3.5, currentY + 3.5);
+          doc.setFontSize(5);
+          doc.text(eleve.slogan || '', currentX + stickerWidth / 2, currentY + 1, { align: 'center' });
 
           doc.setFontSize(8);
-          doc.text(`${(eleve["numero urgence"] || '').toUpperCase()}`, currentX + stickerWidth - 0.5, currentY + stickerHeight - 0.5, { align: 'right' });
+          doc.text(`${(eleve.nom || '').toUpperCase()}`, currentX + 0.5, currentY + 2.0);
+          doc.text(`${(eleve.prenoms || '').toUpperCase()}`, currentX + 0.5, currentY + 2.4);
+
+          doc.setFontSize(8);
+          doc.text(`${matiere.toUpperCase()}`, currentX + 0.5, currentY + 2.8);
+          doc.text(`${(eleve.classe || '').toUpperCase()}`, currentX + 0.5, currentY + 3.2);
+
+          doc.setFontSize(6);
+          doc.text(`NUMERO D'URGENCE: ${(eleve["numero urgence"] || '').toUpperCase()}`, currentX + stickerWidth - 0.5, currentY + stickerHeight - 0.5, { align: 'right' });
 
           if (stickersOnPage % 2 === 1) {
             currentX = marginX;
@@ -191,7 +193,7 @@ function Generator() {
         }
       }
 
-      doc.save('autocollants_eleves.pdf');
+      doc.save('PRINT_STICKERS.pdf');
 
     } catch (err) {
       console.error("Une erreur s'est produite lors de la génération du PDF :", err);
