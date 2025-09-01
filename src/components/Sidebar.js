@@ -14,15 +14,13 @@ function Sidebar() {
   return (
     <div className='sidebar'>
       <div className="sidebar-links">
-        <Link to="/">Tableau de Bord</Link>
-        <Link to="/generator">Générateur</Link>
-        <Link to="/history">Historique</Link>
+        <Link to="/"><span><img src="maison.png" alt="" /></span>Tableau de Bord</Link>
+        <Link to="/generator"><span><img src="reglages.png" alt="" /></span>Générateur</Link>
+        <Link to="/history"><span><img src="calendrier-lignes.png" alt="" /></span>Historique</Link>
       </div>
 
       <div className="sidebar-logout">
-        <button onClick={handleLogout}>
-          <Link to="/login">Déconnexion</Link>
-        </button>
+          <Link to="/login" onClick={handleLogout}><span><img src="sortir.png" alt="" /></span>Déconnexion</Link>
       </div>
     </div>
   )

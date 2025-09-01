@@ -12,7 +12,7 @@ function Dashboard() {
         <Sidebar />
         <div className="body">
             <div className="header">
-                <Header title="Bonjour" content="Bienvenue" date="31 Août" />
+              <Header title="Tableau de bord" content="Bienvenue sur FaceCard" date="1 Septembre" />
             </div>
         </div>
       </div>

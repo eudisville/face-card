@@ -33,8 +33,13 @@ function Nav() {
   return (
     <nav>
       <div className="logo">
-        <h5>FaceCard</h5>
-        <p>Service Professionnel</p>
+        <div className="img">
+          <img src="" alt="" />
+        </div>
+        <div className="text">
+          <h5>FaceCard</h5>
+          <p>Service Professionnel</p>
+        </div>
       </div>
       <div className="right">
         {session ? (
