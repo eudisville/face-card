@@ -163,14 +163,18 @@ function Generator() {
           }
 
           doc.setFont('Helvetica', 'bold');
-          doc.setTextColor(0, 0, 255);
-
+          doc.setTextColor(2, 48, 71);
+          
+          doc.setTextColor(0, 0, 0)
           doc.setFontSize(5);
           doc.text((eleve["nom ecole"] || '').toUpperCase(), currentX + stickerWidth / 2, currentY + 0.8, { align: 'center' });
 
+          doc.setFont('Helvetica', 'normal');
           doc.setFontSize(5);
           doc.text(eleve.slogan || '', currentX + stickerWidth / 2, currentY + 1, { align: 'center' });
 
+          doc.setTextColor(2, 48, 71);
+          doc.setFont('Helvetica', 'bold');
           doc.setFontSize(8);
           doc.text(`${(eleve.nom || '').toUpperCase()}`, currentX + 0.5, currentY + 2.0);
           doc.text(`${(eleve.prenoms || '').toUpperCase()}`, currentX + 0.5, currentY + 2.4);
