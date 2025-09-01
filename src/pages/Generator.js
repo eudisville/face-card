@@ -301,49 +301,88 @@ function Generator() {
             </div>
             <div className="generator-main">
               <div className="input-section">
-                <input
-                  type="file"
-                  accept='.csv,.xlsx,.xls'
-                  onChange={handleFileUpload}
-                  className='file-input'
-                />
-                {/* Intégration */}
-                <p>Logo de l'école</p>
-                <input
-                    type="file"
-                    accept=".png,.jpg,.jpeg,.svg"
-                    onChange={(e) => handleLogoUpload(e, setLogoEcole)}
-                    className='file-input'
-                />
 
-                <p>Logo de la Côte d'Ivoire</p>
-                <input
-                    type="file"
-                    accept=".png,.jpg,.jpeg,.svg"
-                    onChange={(e) => handleLogoUpload(e, setLogoCI)}
-                    className='file-input'
-                />
+                <div className="inputs">
+                  <div className="excel-file">
+                    <input
+                      type="file"
+                      accept='.csv,.xlsx,.xls'
+                      onChange={handleFileUpload}
+                      className='file-input'
+                      id='data-file-input'
+                    />
+                    <label htmlFor="data-file-input" className="custom-file-upload">
+                      Charger le fichier Excel
+                    </label>
+                    {file && (
+                      <p className="file-status">{file.name}</p>
+                    )}
+                  </div>
 
-                <p>Fichier ZIP des photos des élèves</p>
-                <input 
-                    type="file" 
-                    accept=".zip" 
-                    onChange={handleZipUpload} 
-                    className='file-input' 
-                />
+                  <div className="logo-ecole">
+                    <input
+                      type="file"
+                      accept=".png,.jpg,.jpeg,.svg"
+                      onChange={(e) => handleLogoUpload(e, setLogoEcole)}
+                      className='file-input'
+                      id='logo-ecole-input'
+                    />
+                    <label htmlFor="logo-ecole-input" className="custom-file-upload">
+                      Charger le logo (école)
+                    </label>
+                    {logoEcole && (
+                      <p className="file-status">Logo sélectionné.</p>
+                    )}
+                  </div>
+
+                  <div className="logo-ci">
+                    <input
+                      type="file"
+                      accept=".png,.jpg,.jpeg,.svg"
+                      onChange={(e) => handleLogoUpload(e, setLogoCI)}
+                      className='file-input'
+                      id='logo-ci-input'
+                    />
+                    <label htmlFor="logo-ci-input" className="custom-file-upload">
+                      Charger le logo (Embleme CI)
+                    </label>
+                    {logoCI && (
+                      <p className="file-status">Logo sélectionné.</p>
+                    )}
+                  </div>
+
+                  <div className="zip-file">
+                    <input
+                      type="file"
+                      accept=".zip"
+                      onChange={handleZipUpload}
+                      className='file-input'
+                      id='zip-file-input'
+                    />
+                    <label htmlFor="zip-file-input" className="custom-file-upload">
+                      Fichier ZIP Photos
+                    </label>
+                    {Object.keys(studentPhotos).length > 0 && (
+                      <p className="file-status">Photos du ZIP chargées.</p>
+                    )}
+                  </div>
+                  <div className="background-image">
+                    <input
+                      type="file"
+                      accept='.png,.jpg,.jpeg'
+                      onChange={handleImageUpload}
+                      className='file-input'
+                      id='background-image-input'
+                    />
+                    <label htmlFor="background-image-input" className="custom-file-upload">
+                      Image d'arrière-plan
+                    </label>
+                    {backgroundImage && (
+                      <p className="file-status">Image sélectionnée.</p>
+                    )}
+                  </div>
+                </div>
                 
-                {file && (
-                  <p className="file-status">Fichier sélectionné : {file.name}</p>
-                )}
-                {error && <p className="error-message">{error}</p>}
-                <input
-                  type="file"
-                  accept='.png,.jpg,.jpeg'
-                  onChange={handleImageUpload}
-                />
-                {backgroundImage && (
-                    <p className="file-status">Image d'arrière-plan sélectionnée.</p>
-                )}
               </div>
               <button
                 onClick={generatePDF}
