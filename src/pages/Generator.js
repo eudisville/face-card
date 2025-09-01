@@ -12,6 +12,8 @@ function Generator() {
   const [file, setFile] = useState(null);
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
+  const [logoEcole, setLogoEcole] = useState(null);
+  const [logoCI, setLogoCI] = useState(null);
   const [backgroundImage, setBackgroundImage] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -67,6 +69,17 @@ function Generator() {
       } else {
         reader.readAsBinaryString(selectedFile);
       }
+    }
+  };
+
+  const handleLogoUpload = (event, setLogoFunction) => {
+    const selectedImage = event.target.files[0];
+    if (selectedImage) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            setLogoFunction(e.target.result);
+        };
+        reader.readAsDataURL(selectedImage);
     }
   };
 
@@ -141,25 +154,23 @@ function Generator() {
           }
           
           // Définir la couleur et l'épaisseur de la bordure
-          doc.setDrawColor(192, 192, 192); // Gris clair
+          doc.setDrawColor(255, 255, 225); // Gris clair
           doc.setLineWidth(0.02645833); // 1px en cm
 
           // Dessiner le contour de l'autocollant
           doc.rect(currentX, currentY, stickerWidth, stickerHeight);
 
-          const logoEcole = eleve["logo ecole"] ? await loadImageFromUrl(eleve["logo ecole"]) : null;
           if (logoEcole) {
             doc.addImage(logoEcole, 'PNG', currentX + 0.3, currentY + 0.3, 1.2, 1.2);
           }
 
-          const logoCI = eleve["logo CI"] ? await loadImageFromUrl(eleve["logo CI"]) : null;
           if (logoCI) {
-              doc.addImage(logoCI, 'SVG', currentX + stickerWidth - 1.5, currentY + 0.3, 1.2, 1.2);
+            doc.addImage(logoCI, 'PNG', currentX + stickerWidth - 1.5, currentY + 0.3, 1.2, 1.2);
           }
 
           const photoEleve = eleve["photo eleve"] ? await loadImageFromUrl(eleve["photo eleve"]) : null;
           if (photoEleve) {
-              doc.addImage(photoEleve, 'JPEG', currentX + 0.5, currentY + 1.5, 2.5, 2.5);
+            doc.addImage(photoEleve, 'JPEG', currentX + 0.5, currentY + 1.5, 2.5, 2.5);
           }
 
           doc.setFont('Helvetica', 'bold');
@@ -236,6 +247,23 @@ function Generator() {
                   onChange={handleFileUpload}
                   className='file-input'
                 />
+                {/* Intégration */}
+                <p>Logo de l'école</p>
+                <input
+                    type="file"
+                    accept=".png,.jpg,.jpeg,.svg"
+                    onChange={(e) => handleLogoUpload(e, setLogoEcole)}
+                    className='file-input'
+                />
+
+                <p>Logo de la Côte d'Ivoire</p>
+                <input
+                    type="file"
+                    accept=".png,.jpg,.jpeg,.svg"
+                    onChange={(e) => handleLogoUpload(e, setLogoCI)}
+                    className='file-input'
+                />
+                
                 {file && (
                   <p className="file-status">Fichier sélectionné : {file.name}</p>
                 )}
