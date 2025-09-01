@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 import jsPDF from 'jspdf';
+import JSZip from 'jszip';
 import './styles/styles.css';
 import './styles/generator.css';
 
@@ -14,6 +15,7 @@ function Generator() {
   const [error, setError] = useState('');
   const [logoEcole, setLogoEcole] = useState(null);
   const [logoCI, setLogoCI] = useState(null);
+  const [studentPhotos, setStudentPhotos] = useState({});
   const [backgroundImage, setBackgroundImage] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
@@ -83,6 +85,37 @@ function Generator() {
     }
   };
 
+  const handleZipUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+        const zip = await JSZip.loadAsync(file);
+        const photoMap = {};
+
+        await Promise.all(
+            Object.keys(zip.files).map(async (filename) => {
+                const zipEntry = zip.files[filename];
+                if (!zipEntry.dir) {
+                    const content = await zipEntry.async('base64');
+                    const dataUrl = `data:image/${filename.split('.').pop()};base64,${content}`;
+
+                    // Extraction du nom de fichier sans le chemin et l'extension
+                    const fileNameWithoutPath = filename.substring(filename.lastIndexOf('/') + 1);
+                    const normalizedName = fileNameWithoutPath.split('.')[0].replace(/%20/g, ' ').trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                    photoMap[normalizedName] = dataUrl;
+                }
+            })
+        );
+        setStudentPhotos(photoMap);
+        console.log("Photos du ZIP chargées avec succès.", photoMap);
+    } catch (err) {
+        console.error("Erreur lors de la lecture du fichier ZIP :", err);
+        setError("Erreur lors de la lecture du fichier ZIP.");
+    }
+  };
+
+
   const handleImageUpload = (event) => {
     const selectedImage = event.target.files[0];
     if (selectedImage) {
@@ -94,21 +127,21 @@ function Generator() {
     }
   };
 
-  const loadImageFromUrl = async (url) => {
-    try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      });
-    } catch (error) {
-      console.error(`Erreur lors du chargement de l'image depuis l'URL: ${url}`, error);
-      return null;
-    }
-  };
+  // const loadImageFromUrl = async (url) => {
+  //   try {
+  //     const response = await fetch(url);
+  //     const blob = await response.blob();
+  //     return new Promise((resolve, reject) => {
+  //       const reader = new FileReader();
+  //       reader.onloadend = () => resolve(reader.result);
+  //       reader.onerror = reject;
+  //       reader.readAsDataURL(blob);
+  //     });
+  //   } catch (error) {
+  //     console.error(`Erreur lors du chargement de l'image depuis l'URL: ${url}`, error);
+  //     return null;
+  //   }
+  // };
 
   const generatePDF = async () => {
     if (!data || data.length === 0) {
@@ -168,11 +201,38 @@ function Generator() {
             doc.addImage(logoCI, 'PNG', currentX + stickerWidth - 1.5, currentY + 0.3, 1.2, 1.2);
           }
 
-          const photoEleve = eleve["photo eleve"] ? await loadImageFromUrl(eleve["photo eleve"]) : null;
-          if (photoEleve) {
-            doc.addImage(photoEleve, 'JPEG', currentX + 0.5, currentY + 1.5, 2.5, 2.5);
-          }
+          // MISE À JOUR : Normalisation de la clé pour trouver la photo
+          const key = `${(eleve.nom || '').trim()} ${(eleve.prenoms || '').trim()}`.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const photoEleve = studentPhotos[key];
 
+          // Définir les dimensions et la position de la photo
+          const photoX = currentX + 5.5; // Coordonnée X de la photo
+          const photoY = currentY + 1.7; // Coordonnée Y de la photo
+          const photoWidth = 1.5; // Largeur de la photo
+          const photoHeight = 1.5; // Hauteur de la photo
+          const borderRadius = 0.1; // Rayon de la bordure arrondie en cm (équivalent à 1mm ou 10px / 10 = 1mm)
+          const borderWidth = 0.02; // Largeur de la bordure en cm (2px = 0.02cm)
+
+          if (photoEleve) {
+            // Ajoute la photo
+            doc.addImage(photoEleve, 'JPEG', photoX, photoY, photoWidth, photoHeight);
+
+            // Dessine la bordure verte arrondie autour de la photo
+            doc.setDrawColor(0, 128, 0); // Couleur verte (RGB)
+            doc.setLineWidth(borderWidth); // Largeur de la bordure (2px)
+
+            // Dessine un rectangle arrondi avec la bordure
+            // Les coordonnées et dimensions doivent inclure la bordure
+            doc.roundedRect(
+                photoX,
+                photoY,
+                photoWidth,
+                photoHeight,
+                borderRadius,
+                borderRadius,
+                'S' // 'S' pour stroke (bordure seulement)
+            );
+          }
           doc.setFont('Helvetica', 'bold');
           doc.setTextColor(2, 48, 71);
           
@@ -262,6 +322,14 @@ function Generator() {
                     accept=".png,.jpg,.jpeg,.svg"
                     onChange={(e) => handleLogoUpload(e, setLogoCI)}
                     className='file-input'
+                />
+
+                <p>Fichier ZIP des photos des élèves</p>
+                <input 
+                    type="file" 
+                    accept=".zip" 
+                    onChange={handleZipUpload} 
+                    className='file-input' 
                 />
                 
                 {file && (
