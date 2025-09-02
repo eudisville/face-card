@@ -17,6 +17,7 @@ function Sidebar() {
         <Link to="/"><span><img src="maison.png" alt="" /></span>Tableau de Bord</Link>
         <Link to="/generator"><span><img src="reglages.png" alt="" /></span>Générateur</Link>
         <Link to="/history"><span><img src="calendrier-lignes.png" alt="" /></span>Historique</Link>
+        <Link to="/admin"><span><img src="admin.png" alt="" /></span>Administration</Link>
       </div>
 
       <div className="sidebar-logout">

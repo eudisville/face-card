@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Generator from './pages/Generator';
 import History from './pages/History';
 import ProtectedRoute from './components/ProtectedRoute';
+import Admin from './pages/Admin';
 
 function App() {
   return (
@@ -36,6 +37,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <History />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/admin' 
+            element={
+              <ProtectedRoute>
+                <Admin />
               </ProtectedRoute>
             } 
           />

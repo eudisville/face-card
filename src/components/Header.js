@@ -11,6 +11,7 @@ function Header({ title, content, date }) {
             </div>
 
             <div className="header-right">
+                <h5>Aujourd'hui</h5>
                 <h2>{date}</h2>
             </div>
         </div>

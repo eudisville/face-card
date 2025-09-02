@@ -11,6 +11,8 @@ function Historique() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -31,21 +33,41 @@ function Historique() {
     };
   }, []);
 
-  const fetchGenerations = async (id) => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('generations')
-        .select('*')
-        .eq('user_id', id)
-        .order('created_at', { ascending: false });
+  // C'est le useEffect qui doit être modifié
+  useEffect(() => {
+    if (userId) {
+      fetchGenerations(userId, startDate, endDate);
+    }
+  }, [userId, startDate, endDate]); // Ajout de startDate et endDate comme dépendances
 
-      if (error) {
-        console.error("Erreur de récupération de l'historique:", error);
-        setError("Impossible de charger l'historique.");
-      } else {
-        setGenerations(data);
-      }
-      setLoading(false);
+  const fetchGenerations = async (id, start, end) => {
+    setLoading(true);
+    let query = supabase
+      .from('generations')
+      .select('*')
+      .eq('user_id', id)
+      .order('created_at', { ascending: false });
+
+    // Ajout des conditions de filtre
+    if (start) {
+      query = query.gte('created_at', start);
+    }
+    if (end) {
+      // Pour inclure la journée entière, nous ajoutons le temps de fin de journée
+      const endOfDay = new Date(end);
+      endOfDay.setHours(23, 59, 59, 999);
+      query = query.lte('created_at', endOfDay.toISOString());
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error("Erreur de récupération de l'historique:", error);
+      setError("Impossible de charger l'historique.");
+    } else {
+      setGenerations(data);
+    }
+    setLoading(false);
   };
 
   const formatTimestamp = (timestamp) => {
@@ -68,6 +90,29 @@ function Historique() {
           </div>
           <div className="historique-container">
             <h1>Historique des générations</h1>
+
+            <div className="filter-controls">
+              <div className="filter-group">
+                <label htmlFor="startDate">Date de début</label>
+                <input 
+                  type="date" 
+                  id="startDate"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="input-date"
+                />
+              </div>
+              <div className="filter-group">
+                <label htmlFor="endDate">Date de fin</label>
+                <input 
+                  type="date" 
+                  id="endDate"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="input-date"
+                />
+              </div>
+            </div>
             {loading ? (
               <p>Chargement de l'historique...</p>
             ) : error ? (
@@ -84,6 +129,8 @@ function Historique() {
                     <tr>
                       <th scope="col" className="table-header">Date</th>
                       <th scope="col" className="table-header">Nom du fichier</th>
+                      <th scope="col" className="table-header">Élèves</th>
+                      <th scope="col" className="table-header">Écoles</th>
                       <th scope="col" className="table-header">Action</th>
                     </tr>
                   </thead>
@@ -92,6 +139,8 @@ function Historique() {
                       <tr key={gen.id}>
                         <td className="table-data">{formatTimestamp(gen.created_at)}</td>
                         <td className="table-data file-name">{gen.file_name}</td>
+                        <td className="table-data">{gen.nombre_eleves}</td>
+                        <td className="table-data">{gen.nombre_ecoles}</td>
                         <td className="table-data">
                           <a href={gen.file_url} target="_blank" rel="noopener noreferrer" className="download-button">
                             Télécharger

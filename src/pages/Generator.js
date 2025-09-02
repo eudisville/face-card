@@ -271,19 +271,27 @@ function Generator() {
         throw new Error("Erreur lors du téléversement du PDF.");
       }
 
+      // Calculer le nombre d'élèves et d'écoles
+      const studentCount = data.length;
+      const schoolNames = data.map(eleve => eleve["nom ecole"]);
+      const uniqueSchools = [...new Set(schoolNames)];
+      const schoolCount = uniqueSchools.length;
+
       // Récupérer l'URL publique du fichier
       const { data: { publicUrl } } = supabase.storage
         .from('pdfs')
         .getPublicUrl(storagePath);
 
-      // Enregistrer la génération dans la base de données
-      const { error: dbError } = await supabase
-        .from('generations')
-        .insert({
-          user_id: userId,
-          file_name: fileName,
-          file_url: publicUrl,
-        });
+// Enregistrer la génération dans la base de données
+const { error: dbError } = await supabase
+  .from('generations')
+  .insert({
+    user_id: userId,
+    file_name: fileName,
+    file_url: publicUrl,
+    nombre_eleves: studentCount,
+    nombre_ecoles: schoolCount,
+  });
 
       if (dbError) {
         console.error("Erreur lors de la sauvegarde dans la BDD:", dbError);
@@ -410,6 +418,11 @@ function Generator() {
               >
                 {isGenerating ? "Génération en cours..." : "Générer les autocollants"}
               </button>
+            </div>
+            <div className="note">
+              <p>NB : Les noms des photos dans le fichier ZIP doivent correspondre aux colonnes noms et prénoms dans le fichier Excel.
+              Fichier Excel [ nom : YAO, prenoms : Jean ] - Nom image : YAO Jean.
+              </p>
             </div>
           </div>
         </div>

@@ -142,3 +142,10 @@
   color: #dc3545;
   font-weight: bold;
 }
+
+
+.note p {
+  font-size: 12px;
+  margin-top: 20px;
+  color: gray;
+}

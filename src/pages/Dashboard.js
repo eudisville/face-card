@@ -11,9 +11,11 @@ function Dashboard() {
   const [generationsCount, setGenerationsCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [currentDate, setCurrentDate] = useState('');
+  const [totalEleves, setTotalEleves] = useState(0);
+  const [totalEcoles, setTotalEcoles] = useState(0);
 
   useEffect(() => {
-    const fetchGenerationsCount = async () => {
+    const fetchDashboardData = async () => {
       // Récupérer la session de l'utilisateur pour obtenir son ID
       const { data: { user }, error: userError } = await supabase.auth.getUser();
 
@@ -23,22 +25,29 @@ function Dashboard() {
         return;
       }
 
-      // Récupérer le nombre de générations pour l'utilisateur
-      const { count, error } = await supabase
+      // Récupérer les données de génération pour l'utilisateur
+      const { data, error } = await supabase
         .from('generations')
-        .select('*', { count: 'exact' })
-        .eq('user_id', user.id); // Filtrer par l'ID de l'utilisateur
+        .select('nombre_eleves, nombre_ecoles')
+        .eq('user_id', user.id);
       
       if (error) {
-        console.error('Error fetching generations count:', error.message);
+        console.error('Erreur lors de la récupération des données du tableau de bord:', error.message);
       } else {
-        setGenerationsCount(count);
+        // Calculer les totaux à partir des données récupérées
+        const elevesTotal = data.reduce((sum, current) => sum + current.nombre_eleves, 0);
+        const ecolesTotal = data.reduce((sum, current) => sum + current.nombre_ecoles, 0);
+
+        setGenerationsCount(data.length);
+        setTotalEleves(elevesTotal);
+        setTotalEcoles(ecolesTotal);
       }
       setLoading(false);
     };
 
-    fetchGenerationsCount();
-  }, []);
+    fetchDashboardData();
+
+    }, []);
 
   useEffect(() => {
     const today = new Date();
@@ -63,6 +72,16 @@ function Dashboard() {
                 count={loading ? '...' : generationsCount} 
                 desc="Nombres de générations FaceCard" 
               />
+              <Card 
+  header="Nombres d'élèves" 
+  count={loading ? '...' : totalEleves} 
+  desc="Nombres de générations des élèves" 
+/>
+<Card 
+  header="Nombres d'écoles" 
+  count={loading ? '...' : totalEcoles} 
+  desc="Nombres de générations écoles" 
+/>
             </div>
 
             <div className="actions">
