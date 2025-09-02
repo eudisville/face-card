@@ -73,15 +73,15 @@ function Dashboard() {
                 desc="Nombres de générations FaceCard" 
               />
               <Card 
-  header="Nombres d'élèves" 
-  count={loading ? '...' : totalEleves} 
-  desc="Nombres de générations des élèves" 
-/>
-<Card 
-  header="Nombres d'écoles" 
-  count={loading ? '...' : totalEcoles} 
-  desc="Nombres de générations écoles" 
-/>
+                header="Nombres d'élèves" 
+                count={loading ? '...' : totalEleves} 
+                desc="Nombres de générations des élèves" 
+              />
+              <Card 
+                header="Nombres d'écoles" 
+                count={loading ? '...' : totalEcoles} 
+                desc="Nombres de générations écoles" 
+              />
             </div>
 
             <div className="actions">

@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Generator from './pages/Generator';
 import History from './pages/History';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoutes';
 import Admin from './pages/Admin';
 
 function App() {
@@ -43,9 +44,9 @@ function App() {
           <Route 
             path='/admin' 
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <Admin />
-              </ProtectedRoute>
+              </AdminRoute>
             } 
           />
         </Routes>
