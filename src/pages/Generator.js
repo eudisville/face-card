@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Nav from '../components/Nav';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
+import { supabase } from '../supabase/supabaseClient'; // Importez le client Supabase
 import * as XLSX from 'xlsx';
 import Papa from 'papaparse';
 import jsPDF from 'jspdf';
@@ -18,6 +19,24 @@ function Generator() {
   const [studentPhotos, setStudentPhotos] = useState({});
   const [backgroundImage, setBackgroundImage] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [userId, setUserId] = useState(null); // Nouvel état pour l'ID de l'utilisateur
+
+  // Gérer l'authentification de l'utilisateur
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session) {
+          setUserId(session.user.id);
+        } else {
+          setUserId(null);
+        }
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const allMatiere = [
     "Mathématiques", "Français", "Anglais", "Physique-Chimie",
@@ -77,44 +96,41 @@ function Generator() {
   const handleLogoUpload = (event, setLogoFunction) => {
     const selectedImage = event.target.files[0];
     if (selectedImage) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            setLogoFunction(e.target.result);
-        };
-        reader.readAsDataURL(selectedImage);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setLogoFunction(e.target.result);
+      };
+      reader.readAsDataURL(selectedImage);
     }
   };
 
   const handleZipUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
+    const file = event.target.files[0];
+    if (!file) return;
 
-    try {
-        const zip = await JSZip.loadAsync(file);
-        const photoMap = {};
+    try {
+      const zip = await JSZip.loadAsync(file);
+      const photoMap = {};
 
-        await Promise.all(
-            Object.keys(zip.files).map(async (filename) => {
-                const zipEntry = zip.files[filename];
-                if (!zipEntry.dir) {
-                    const content = await zipEntry.async('base64');
-                    const dataUrl = `data:image/${filename.split('.').pop()};base64,${content}`;
-
-                    // Extraction du nom de fichier sans le chemin et l'extension
-                    const fileNameWithoutPath = filename.substring(filename.lastIndexOf('/') + 1);
-                    const normalizedName = fileNameWithoutPath.split('.')[0].replace(/%20/g, ' ').trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                    photoMap[normalizedName] = dataUrl;
-                }
-            })
-        );
-        setStudentPhotos(photoMap);
-        console.log("Photos du ZIP chargées avec succès.", photoMap);
-    } catch (err) {
-        console.error("Erreur lors de la lecture du fichier ZIP :", err);
-        setError("Erreur lors de la lecture du fichier ZIP.");
-    }
-  };
-
+      await Promise.all(
+        Object.keys(zip.files).map(async (filename) => {
+          const zipEntry = zip.files[filename];
+          if (!zipEntry.dir) {
+            const content = await zipEntry.async('base64');
+            const dataUrl = `data:image/${filename.split('.').pop()};base64,${content}`;
+            const fileNameWithoutPath = filename.substring(filename.lastIndexOf('/') + 1);
+            const normalizedName = fileNameWithoutPath.split('.')[0].replace(/%20/g, ' ').trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            photoMap[normalizedName] = dataUrl;
+          }
+        })
+      );
+      setStudentPhotos(photoMap);
+      console.log("Photos du ZIP chargées avec succès.", photoMap);
+    } catch (err) {
+      console.error("Erreur lors de la lecture du fichier ZIP :", err);
+      setError("Erreur lors de la lecture du fichier ZIP.");
+    }
+  };
 
   const handleImageUpload = (event) => {
     const selectedImage = event.target.files[0];
@@ -127,25 +143,13 @@ function Generator() {
     }
   };
 
-  // const loadImageFromUrl = async (url) => {
-  //   try {
-  //     const response = await fetch(url);
-  //     const blob = await response.blob();
-  //     return new Promise((resolve, reject) => {
-  //       const reader = new FileReader();
-  //       reader.onloadend = () => resolve(reader.result);
-  //       reader.onerror = reject;
-  //       reader.readAsDataURL(blob);
-  //     });
-  //   } catch (error) {
-  //     console.error(`Erreur lors du chargement de l'image depuis l'URL: ${url}`, error);
-  //     return null;
-  //   }
-  // };
-
   const generatePDF = async () => {
     if (!data || data.length === 0) {
       alert("Veuillez d'abord charger un fichier de données valide.");
+      return;
+    }
+    if (!userId) {
+      alert("Veuillez vous connecter pour générer et sauvegarder le PDF.");
       return;
     }
 
@@ -161,9 +165,8 @@ function Generator() {
       const pageHeight = 29.7;
       const stickerWidth = 7.5;
       const stickerHeight = 4.5;
-      const stickerMargin = 0.5; // Marge entre les autocollants
+      const stickerMargin = 0.3;
 
-      // Calcul des marges pour un centrage parfait
       const totalStickerWidth = (stickerWidth * 2) + stickerMargin;
       const totalStickerHeight = (stickerHeight * 6) + (stickerMargin * 5);
       const marginX = (pageWidth - totalStickerWidth) / 2;
@@ -185,12 +188,9 @@ function Generator() {
           if (backgroundImage) {
             doc.addImage(backgroundImage, 'PNG', currentX, currentY, stickerWidth, stickerHeight);
           }
-          
-          // Définir la couleur et l'épaisseur de la bordure
-          doc.setDrawColor(255, 255, 225); // Gris clair
-          doc.setLineWidth(0.02645833); // 1px en cm
 
-          // Dessiner le contour de l'autocollant
+          doc.setDrawColor(255, 255, 225);
+          doc.setLineWidth(0.02645833);
           doc.rect(currentX, currentY, stickerWidth, stickerHeight);
 
           if (logoEcole) {
@@ -201,41 +201,26 @@ function Generator() {
             doc.addImage(logoCI, 'PNG', currentX + stickerWidth - 1.5, currentY + 0.3, 1.2, 1.2);
           }
 
-          // MISE À JOUR : Normalisation de la clé pour trouver la photo
-          const key = `${(eleve.nom || '').trim()} ${(eleve.prenoms || '').trim()}`.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-          const photoEleve = studentPhotos[key];
+          const key = `${(eleve.nom || '').trim()} ${(eleve.prenoms || '').trim()}`.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const photoEleve = studentPhotos[key];
 
-          // Définir les dimensions et la position de la photo
-          const photoX = currentX + 5.5; // Coordonnée X de la photo
-          const photoY = currentY + 1.7; // Coordonnée Y de la photo
-          const photoWidth = 1.5; // Largeur de la photo
-          const photoHeight = 1.5; // Hauteur de la photo
-          const borderRadius = 0.1; // Rayon de la bordure arrondie en cm (équivalent à 1mm ou 10px / 10 = 1mm)
-          const borderWidth = 0.02; // Largeur de la bordure en cm (2px = 0.02cm)
+          const photoX = currentX + 5.5;
+          const photoY = currentY + 1.7;
+          const photoWidth = 1.5;
+          const photoHeight = 1.8;
+          const borderRadius = 0.1;
+          const borderWidth = 0.03;
 
-          if (photoEleve) {
-            // Ajoute la photo
-            doc.addImage(photoEleve, 'JPEG', photoX, photoY, photoWidth, photoHeight);
+          if (photoEleve) {
+            doc.addImage(photoEleve, 'JPEG', photoX, photoY, photoWidth, photoHeight);
+            doc.setDrawColor(2, 48, 71);
+            doc.setLineWidth(borderWidth);
+            doc.roundedRect(photoX, photoY, photoWidth, photoHeight, borderRadius, borderRadius, 'S');
+          }
 
-            // Dessine la bordure verte arrondie autour de la photo
-            doc.setDrawColor(0, 128, 0); // Couleur verte (RGB)
-            doc.setLineWidth(borderWidth); // Largeur de la bordure (2px)
-
-            // Dessine un rectangle arrondi avec la bordure
-            // Les coordonnées et dimensions doivent inclure la bordure
-            doc.roundedRect(
-                photoX,
-                photoY,
-                photoWidth,
-                photoHeight,
-                borderRadius,
-                borderRadius,
-                'S' // 'S' pour stroke (bordure seulement)
-            );
-          }
           doc.setFont('Helvetica', 'bold');
           doc.setTextColor(2, 48, 71);
-          
+
           doc.setTextColor(0, 0, 0)
           doc.setFontSize(5);
           doc.text((eleve["nom ecole"] || '').toUpperCase(), currentX + stickerWidth / 2, currentY + 0.8, { align: 'center' });
@@ -268,11 +253,48 @@ function Generator() {
         }
       }
 
-      doc.save('PRINT_STICKERS.pdf');
+      // Récupérer le PDF en tant que Blob
+      const pdfBlob = doc.output('blob');
+      const fileName = `STICKERS_${new Date().toISOString()}.pdf`;
+      const storagePath = `${userId}/${fileName}`;
 
+      // Téléverser le fichier sur Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('pdfs')
+        .upload(storagePath, pdfBlob, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) {
+        console.error("Erreur lors de l'upload du fichier:", uploadError);
+        throw new Error("Erreur lors du téléversement du PDF.");
+      }
+
+      // Récupérer l'URL publique du fichier
+      const { data: { publicUrl } } = supabase.storage
+        .from('pdfs')
+        .getPublicUrl(storagePath);
+
+      // Enregistrer la génération dans la base de données
+      const { error: dbError } = await supabase
+        .from('generations')
+        .insert({
+          user_id: userId,
+          file_name: fileName,
+          file_url: publicUrl,
+        });
+
+      if (dbError) {
+        console.error("Erreur lors de la sauvegarde dans la BDD:", dbError);
+        throw new Error("Erreur lors de la sauvegarde dans la base de données.");
+      }
+
+      alert("PDF généré et sauvegardé avec succès ! Vous pouvez le retrouver dans l'Historique.");
+      doc.save(fileName); // Télécharge aussi le fichier localement
     } catch (err) {
-      console.error("Une erreur s'est produite lors de la génération du PDF :", err);
-      alert("La génération du PDF a échoué. Veuillez vérifier la console pour plus de détails.");
+      console.error("Une erreur s'est produite :", err);
+      alert(`La génération du PDF a échoué. Détails: ${err.message}`);
     } finally {
       setIsGenerating(false);
     }
@@ -285,7 +307,7 @@ function Generator() {
         <Sidebar />
         <div className="body">
           <div className="header">
-            <Header title="Générateur d'autocollants" content="Bienvenue" date="" />
+            <Header title="Générateur d'autocollants" content="Importez votre fichier Excel et générez automatiquement 1 PDF A4 par élève (12 autocollants identiques)" date="" />
           </div>
           <div className="generator">
             <div className="model">
@@ -301,7 +323,6 @@ function Generator() {
             </div>
             <div className="generator-main">
               <div className="input-section">
-
                 <div className="inputs">
                   <div className="excel-file">
                     <input
@@ -382,7 +403,6 @@ function Generator() {
                     )}
                   </div>
                 </div>
-                
               </div>
               <button
                 onClick={generatePDF}

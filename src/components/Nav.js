@@ -34,16 +34,19 @@ function Nav() {
     <nav>
       <div className="logo">
         <div className="img">
-          <img src="" alt="" />
+          <img src="cas.png" alt="" />
         </div>
         <div className="text">
           <h5>FaceCard</h5>
-          <p>Service Professionnel</p>
+          <p>Solution Professionnelle</p>
         </div>
       </div>
       <div className="right">
         {session ? (
           <div className="account">
+            <div className="account-img">
+              <img src="utilisateur.png" alt="" />
+            </div>
             <h5>{profileName}</h5>
           </div>
         ) : (

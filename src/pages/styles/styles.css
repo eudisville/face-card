@@ -80,3 +80,44 @@
     width: 84%;
     padding: 20px 40px;
 }
+
+.cards {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.project {
+    width: 50%;
+    background-color: rgb(235, 244, 255);
+    border: 1px solid rgb(179, 212, 255);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    gap: 20px;
+}
+
+.project-text a {
+    text-decoration: none;
+    color: rgb(0, 26, 64);
+}
+
+.project-text p {
+    font-size: 11px;
+}
+
+.project-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(0, 98, 255);
+    padding: 10px;
+    border-radius: 50px;
+}
