@@ -13,9 +13,20 @@ function Dashboard() {
 
 useEffect(() => {
     const fetchGenerationsCount = async () => {
-      const { data, count, error } = await supabase
+      // Récupérer la session de l'utilisateur pour obtenir son ID
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+      if (userError || !user) {
+        console.error("Erreur d'authentification:", userError?.message);
+        setLoading(false);
+        return;
+      }
+
+      // Récupérer le nombre de générations pour l'utilisateur
+      const { count, error } = await supabase
         .from('generations')
-        .select('*', { count: 'exact' });
+        .select('*', { count: 'exact' })
+        .eq('user_id', user.id); // Filtrer par l'ID de l'utilisateur
       
       if (error) {
         console.error('Error fetching generations count:', error.message);
