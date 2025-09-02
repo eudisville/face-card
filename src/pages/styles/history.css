@@ -5,6 +5,20 @@
     color: gray;
 }
 
+.empty-history-message {
+    margin-top: 30px;
+    text-align: center;
+    color: gray;
+}
+
+.empty-history-message p {
+    font-size: 14px;
+}
+
+.empty-history-message a {
+    color: black;
+}
+
 .table-responsive {
     overflow-x: auto;   
 }

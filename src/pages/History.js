@@ -120,7 +120,7 @@ function Historique() {
             ) : generations.length === 0 ? (
               <div className="empty-history-message">
                 <h3>Aucune génération trouvée.</h3>
-                <p>Pour l'instant, votre historique est vide. <br /> Dirigez-vous vers le <a href="/generator">générateur</a> pour créer vos premiers autocollants !</p>
+                <p>Dirigez-vous vers le <a href="/generator">générateur</a> pour créer vos premiers autocollants !</p>
               </div>
             ) : (
               <div className="table-responsive">

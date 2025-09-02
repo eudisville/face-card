@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { supabase } from '../supabase/supabaseClient';
 import './Sidebar.css';
 
 function Sidebar() {
   const [isAdmin, setIsAdmin] = useState(false);
+
+  const location = useLocation();
+  // Fonction pour vérifier si un lien est actif
+  const isActive = (path) => {
+    return location.pathname === path;
+  };
 
   useEffect(() => {
     const checkAdminRole = async () => {
@@ -36,11 +42,11 @@ function Sidebar() {
   return (
     <div className='sidebar'>
       <div className="sidebar-links">
-        <Link to="/"><span><img src="maison.png" alt="" /></span>Tableau de Bord</Link>
-        <Link to="/generator"><span><img src="reglages.png" alt="" /></span>Générateur</Link>
-        <Link to="/history"><span><img src="calendrier-lignes.png" alt="" /></span>Historique</Link>
+        <Link to="/" className={isActive('/') ? 'active' : ''}><span><img src="maison.png" alt="" /></span>Tableau de Bord</Link>
+        <Link to="/generator" className={isActive('/generator') ? 'active' : ''}><span><img src="reglages.png" alt="" /></span>Générateur</Link>
+        <Link to="/history" className={isActive('/history') ? 'active' : ''}><span><img src="calendrier-lignes.png" alt="" /></span>Historique</Link>
         {isAdmin && (
-          <Link to="/admin"><span><img src="admin.png" alt="" /></span>Administration</Link>
+          <Link to="/admin" className={isActive('/admin') ? 'active' : ''}><span><img src="admin.png" alt="" /></span>Administration</Link>
         )}
       </div>
 
