@@ -114,7 +114,9 @@ function Historique() {
               </div>
             </div>
             {loading ? (
-              <p>Chargement de l'historique...</p>
+              <div className="loading-container">
+                <div className="spinner"></div>
+              </div>
             ) : error ? (
               <p className="error-message">{error}</p>
             ) : generations.length === 0 ? (

@@ -40,6 +40,7 @@ function Register() {
     <div className='auth-container'>
       <div className="auth-box">
         <div className="auth-header">
+          <img src="cap.png" alt="" />
           <h2>FaceCard</h2>
           <p>App Générateur d'autocollants</p>
         </div>

@@ -32,6 +32,10 @@
     margin-bottom: 50px;
 }
 
+.auth-header img {
+    width: 70px;
+}
+
 .auth-header h2 {
     font-size: 30px;
 }
