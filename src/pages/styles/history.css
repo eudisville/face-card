@@ -1,4 +1,10 @@
-/* Styles pour le tableau */
+.historique-container h1{
+    font-size: 16px;
+    margin-top: 20px;
+    text-transform: uppercase;
+    color: gray;
+}
+
 .table-responsive {
     overflow-x: auto;   
 }
@@ -20,6 +26,7 @@
     padding: 10px 20px;
     text-align: left;
     border-bottom: 1px solid #e5e7eb;
+    border: 1px solid #0067cd3c;
 }
 
 .generations-table th {

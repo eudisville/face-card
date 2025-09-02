@@ -1,12 +1,33 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Nav from '../components/Nav'
 import Sidebar from '../components/Sidebar'
 import './styles/styles.css'
 import Header from '../components/Header'
 import Card from '../components/Card'
 import { Link } from 'react-router-dom'
+import { supabase } from '../supabase/supabaseClient'
 
 function Dashboard() {
+  const [generationsCount, setGenerationsCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+    const fetchGenerationsCount = async () => {
+      const { data, count, error } = await supabase
+        .from('generations')
+        .select('*', { count: 'exact' });
+      
+      if (error) {
+        console.error('Error fetching generations count:', error.message);
+      } else {
+        setGenerationsCount(count);
+      }
+      setLoading(false);
+    };
+
+    fetchGenerationsCount();
+  }, []);
+
   return (
     <div>
       <Nav />
@@ -18,7 +39,11 @@ function Dashboard() {
             </div>
 
             <div className="cards">
-              <Card header="Générations" count="28" desc="Nombres de générations FaceCard" />
+              <Card 
+                header="Générations" 
+                count={loading ? '...' : generationsCount} 
+                desc="Nombres de générations FaceCard" 
+              />
             </div>
 
             <div className="actions">

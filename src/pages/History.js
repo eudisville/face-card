@@ -67,6 +67,7 @@ function Historique() {
             <Header title="Historique des générations" content="Consultez et téléchargez vos anciens fichiers PDF." />
           </div>
           <div className="historique-container">
+            <h1>Historique des générations</h1>
             {loading ? (
               <p>Chargement de l'historique...</p>
             ) : error ? (
