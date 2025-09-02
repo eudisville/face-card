@@ -10,8 +10,9 @@ import { supabase } from '../supabase/supabaseClient'
 function Dashboard() {
   const [generationsCount, setGenerationsCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [currentDate, setCurrentDate] = useState('');
 
-useEffect(() => {
+  useEffect(() => {
     const fetchGenerationsCount = async () => {
       // Récupérer la session de l'utilisateur pour obtenir son ID
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -39,6 +40,13 @@ useEffect(() => {
     fetchGenerationsCount();
   }, []);
 
+  useEffect(() => {
+    const today = new Date();
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    const formattedDate = today.toLocaleDateString('fr-FR', options);
+    setCurrentDate(formattedDate);
+  }, []);
+
   return (
     <div>
       <Nav />
@@ -46,7 +54,7 @@ useEffect(() => {
         <Sidebar />
         <div className="body">
             <div className="header">
-              <Header title="Tableau de bord" content="Gérez vos templates et suivez toute l'activité" date="1 Septembre" />
+              <Header title="Tableau de bord" content="Gérez vos templates et suivez toute l'activité" date={currentDate} />
             </div>
 
             <div className="cards">
