@@ -32,7 +32,11 @@
 
 .users-table th {
     background-color: #0062ff;
+    font-size: 0.75rem;
+    color: white;
     font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .users-table tr:nth-child(even) {
