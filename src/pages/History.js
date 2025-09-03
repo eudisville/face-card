@@ -98,8 +98,8 @@ function Historique() {
   };
 
   const downloadFile = async (filePath) => {
-  console.log('Chemin du fichier reçu:', filePath); // Ajoutez cette ligne
-  console.log('Nom du bucket utilisé:', 'pdfs'); // Et celle-ci
+  console.log('Chemin du fichier reçu:', filePath); 
+  console.log('Nom du bucket utilisé:', 'pdfs');
 
   if (!filePath) {
       console.error('Chemin du fichier manquant.');
@@ -117,14 +117,19 @@ function Historique() {
     // Renvoie null si une erreur se produit
     return null;
   }
+
   return data.signedUrl;
-};
+  };
   
   return (
     <div>
-      <Nav />
+      <div className="nav">
+        <Nav />
+      </div>
       <div className="content">
-        <Sidebar />
+        <div className="bar">
+          <Sidebar />
+        </div>
         <div className="body">
           <div className="header">
             <Header title="Historique des générations" content="Consultez et téléchargez vos anciens fichiers PDF." />

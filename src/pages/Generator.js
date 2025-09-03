@@ -325,9 +325,13 @@ const { data: dbInsertData, error: dbError } = await supabase
 
   return (
     <div>
-      <Nav />
+      <div className="nav">
+        <Nav />
+      </div>
       <div className="content">
-        <Sidebar />
+        <div className="bar">
+          <Sidebar />
+        </div>
         <div className="body">
           <div className="header">
             <Header title="Générateur d'autocollants" content="Importez votre fichier Excel et générez automatiquement 1 PDF A4 par élève (12 autocollants identiques)" date="" />

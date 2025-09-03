@@ -1,6 +1,6 @@
 .sidebar {
     height: 90vh;
-    width: 16%;
+    width: 100%;
     border: 1px solid gainsboro;
     display: flex;
     flex-direction: column;

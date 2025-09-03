@@ -80,9 +80,13 @@ function Dashboard() {
 
   return (
     <div>
-      <Nav />
+      <div className="nav">
+        <Nav />
+      </div>
       <div className="content">
-        <Sidebar />
+        <div className="bar">
+          <Sidebar />
+        </div>
         <div className="body">
             <div className="header">
               <Header title="Tableau de bord" content="Gérez vos templates et suivez toute l'activité" date={currentDate} />
