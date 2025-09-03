@@ -282,21 +282,36 @@ function Generator() {
         .from('pdfs')
         .getPublicUrl(storagePath);
 
-// Enregistrer la génération dans la base de données
-const { error: dbError } = await supabase
+      // Enregistrer la génération dans la base de données
+        // La variable 'uploadData.path' contient déjà le chemin de stockage nécessaire
+const { data: dbInsertData, error: dbError } = await supabase
   .from('generations')
   .insert({
     user_id: userId,
     file_name: fileName,
-    file_url: publicUrl,
+    file_path: uploadData.path, // C'est la modification cruciale
     nombre_eleves: studentCount,
     nombre_ecoles: schoolCount,
   });
 
-      if (dbError) {
-        console.error("Erreur lors de la sauvegarde dans la BDD:", dbError);
-        throw new Error("Erreur lors de la sauvegarde dans la base de données.");
-      }
+        if (dbError) {
+          console.error("Erreur lors de la sauvegarde dans la BDD:", dbError);
+          throw new Error("Erreur lors de la sauvegarde dans la base de données.");
+        }
+
+        // Réinitialiser les états des fichiers après une génération réussie
+        setFile(null);
+        setData(null);
+        setLogoEcole(null);
+        setLogoCI(null);
+        setStudentPhotos({});
+        setBackgroundImage(null);
+
+        // Réinitialiser la valeur des champs de saisie de type 'file'
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => {
+          input.value = '';
+        });
 
       alert("PDF généré et sauvegardé avec succès ! Vous pouvez le retrouver dans l'Historique.");
       doc.save(fileName); // Télécharge aussi le fichier localement

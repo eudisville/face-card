@@ -16,34 +16,56 @@ function Dashboard() {
 
   useEffect(() => {
     const fetchDashboardData = async () => {
-      // Récupérer la session de l'utilisateur pour obtenir son ID
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+    setLoading(true);
 
-      if (userError || !user) {
+    // 1. Get the current user's session
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !user) {
         console.error("Erreur d'authentification:", userError?.message);
         setLoading(false);
         return;
-      }
+    }
 
-      // Récupérer les données de génération pour l'utilisateur
-      const { data, error } = await supabase
-        .from('generations')
-        .select('nombre_eleves, nombre_ecoles')
-        .eq('user_id', user.id);
-      
-      if (error) {
+    // 2. Fetch the user's role from the profiles table
+    const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('roles')
+        .eq('id', user.id)
+        .single();
+
+    if (profileError || !profile) {
+        console.error("Erreur de récupération du profil:", profileError);
+        setLoading(false);
+        return;
+    }
+
+    const isAdmin = profile?.roles === 'admin';
+
+    // 3. Construct the query based on the user's role
+    let query = supabase.from('generations').select('nombre_eleves, nombre_ecoles', { count: 'exact' });
+
+    if (!isAdmin) {
+        query = query.eq('user_id', user.id);
+    }
+
+    // 4. Execute the query
+    const { data, count, error } = await query;
+
+    if (error) {
         console.error('Erreur lors de la récupération des données du tableau de bord:', error.message);
-      } else {
-        // Calculer les totaux à partir des données récupérées
+    } else {
+        // Calculate the totals from the fetched data
         const elevesTotal = data.reduce((sum, current) => sum + current.nombre_eleves, 0);
         const ecolesTotal = data.reduce((sum, current) => sum + current.nombre_ecoles, 0);
 
-        setGenerationsCount(data.length);
+        setGenerationsCount(count);
         setTotalEleves(elevesTotal);
         setTotalEcoles(ecolesTotal);
-      }
-      setLoading(false);
-    };
+    }
+    
+    setLoading(false);
+  };
 
     fetchDashboardData();
 

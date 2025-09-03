@@ -42,30 +42,48 @@ function Historique() {
 
   const fetchGenerations = async (id, start, end) => {
     setLoading(true);
-    let query = supabase
-      .from('generations')
-      .select('*')
-      .eq('user_id', id)
-      .order('created_at', { ascending: false });
+    setError(null);
 
-    // Ajout des conditions de filtre
+    // Étape 1: Vérifier le rôle de l'utilisateur
+    const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('roles')
+        .eq('id', id)
+        .single();
+
+    if (profileError) {
+        console.error("Erreur de récupération du profil:", profileError);
+        setError("Impossible de charger l'historique.");
+        setLoading(false);
+        return;
+    }
+
+    const isAdmin = profile?.roles === 'admin';
+    let query = supabase.from('generations').select('*').order('created_at', { ascending: false });
+
+    // Étape 2: Ajouter le filtre de manière conditionnelle
+    if (!isAdmin) {
+        // Pour les utilisateurs non-admins, on filtre par leur user_id
+        query = query.eq('user_id', id);
+    }
+
+    // Ajout des conditions de filtre de date (inchangées)
     if (start) {
-      query = query.gte('created_at', start);
+        query = query.gte('created_at', start);
     }
     if (end) {
-      // Pour inclure la journée entière, nous ajoutons le temps de fin de journée
-      const endOfDay = new Date(end);
-      endOfDay.setHours(23, 59, 59, 999);
-      query = query.lte('created_at', endOfDay.toISOString());
+        const endOfDay = new Date(end);
+        endOfDay.setHours(23, 59, 59, 999);
+        query = query.lte('created_at', endOfDay.toISOString());
     }
 
     const { data, error } = await query;
 
     if (error) {
-      console.error("Erreur de récupération de l'historique:", error);
-      setError("Impossible de charger l'historique.");
+        console.error("Erreur de récupération de l'historique:", error);
+        setError("Impossible de charger l'historique.");
     } else {
-      setGenerations(data);
+        setGenerations(data);
     }
     setLoading(false);
   };
@@ -78,6 +96,29 @@ function Historique() {
 
     return `${day}/${month}/${year}`;
   };
+
+  const downloadFile = async (filePath) => {
+  console.log('Chemin du fichier reçu:', filePath); // Ajoutez cette ligne
+  console.log('Nom du bucket utilisé:', 'pdfs'); // Et celle-ci
+
+  if (!filePath) {
+      console.error('Chemin du fichier manquant.');
+      // Affiche l'erreur si le chemin est null ou undefined
+      return null;
+  }
+
+  const { data, error } = await supabase
+    .storage
+    .from('pdfs')
+    .createSignedUrl(filePath, 60);
+
+  if (error) {
+    console.error('Erreur lors de la création de l\'URL signée:', error.message);
+    // Renvoie null si une erreur se produit
+    return null;
+  }
+  return data.signedUrl;
+};
   
   return (
     <div>
@@ -144,9 +185,20 @@ function Historique() {
                         <td className="table-data">{gen.nombre_eleves}</td>
                         <td className="table-data">{gen.nombre_ecoles}</td>
                         <td className="table-data">
-                          <a href={gen.file_url} target="_blank" rel="noopener noreferrer" className="download-button">
+                          <button
+                            onClick={async () => {
+                                console.log("Chemin du fichier:", gen.file_path);
+                                const signedUrl = await downloadFile(gen.file_path);
+                                if (signedUrl) {
+                                    window.open(signedUrl, '_blank');
+                                } else {
+                                    alert("Erreur: Impossible de télécharger le fichier.");
+                                }
+                            }}
+                            className="download-button"
+                          >
                             Télécharger
-                          </a>
+                        </button>
                         </td>
                       </tr>
                     ))}

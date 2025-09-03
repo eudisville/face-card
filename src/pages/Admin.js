@@ -46,13 +46,13 @@ function Admin() {
       setTotalGenerations(generationsCount);
       setTotalEleves(elevesTotal);
       setTotalEcoles(ecolesTotal);
-      setTotalUsers(usersCount); // <-- Ligne ajoutée
+      setTotalUsers(usersCount);
     }
     setLoading(false);
-};
+  };
 
-        fetchAdminData();
-        }, []);
+  fetchAdminData();
+  }, []);
         
     return (
         <div>
