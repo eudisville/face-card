@@ -233,10 +233,11 @@ function Generator() {
           doc.setFont('Helvetica', 'bold');
           doc.setFontSize(8);
           doc.text(`${(eleve.nom || '').toUpperCase()}`, currentX + 0.5, currentY + 2.0);
-          doc.text(`${(eleve.prenoms || '').toUpperCase()}`, currentX + 0.5, currentY + 2.4);
+          doc.text(`${(eleve.prenoms || '').toUpperCase()}`, currentX + 0.5, currentY + 2.3);
 
           doc.setFontSize(8);
-          doc.text(`${matiere.toUpperCase()}`, currentX + 0.5, currentY + 2.8);
+          doc.text(`${matiere.toUpperCase()}`, currentX + 0.5, currentY + 2.6);
+          doc.text(`${(eleve.matricule || '').toUpperCase()}`, currentX + 0.5, currentY + 2.9);
           doc.text(`${(eleve.classe || '').toUpperCase()}`, currentX + 0.5, currentY + 3.2);
 
           doc.setFontSize(6);
@@ -283,16 +284,16 @@ function Generator() {
         .getPublicUrl(storagePath);
 
       // Enregistrer la génération dans la base de données
-        // La variable 'uploadData.path' contient déjà le chemin de stockage nécessaire
-const { data: dbInsertData, error: dbError } = await supabase
-  .from('generations')
-  .insert({
-    user_id: userId,
-    file_name: fileName,
-    file_path: uploadData.path, // C'est la modification cruciale
-    nombre_eleves: studentCount,
-    nombre_ecoles: schoolCount,
-  });
+      // La variable 'uploadData.path' contient déjà le chemin de stockage nécessaire
+      const { data: dbInsertData, error: dbError } = await supabase
+        .from('generations')
+        .insert({
+          user_id: userId,
+          file_name: fileName,
+          file_path: uploadData.path,
+          nombre_eleves: studentCount,
+          nombre_ecoles: schoolCount,
+        });
 
         if (dbError) {
           console.error("Erreur lors de la sauvegarde dans la BDD:", dbError);

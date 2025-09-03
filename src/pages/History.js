@@ -44,7 +44,7 @@ function Historique() {
     setLoading(true);
     setError(null);
 
-    // Étape 1: Vérifier le rôle de l'utilisateur
+    // Étape 1 : Récupérer le rôle de l'utilisateur connecté
     const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('roles')
@@ -59,15 +59,19 @@ function Historique() {
     }
 
     const isAdmin = profile?.roles === 'admin';
-    let query = supabase.from('generations').select('*').order('created_at', { ascending: false });
+    let query;
 
-    // Étape 2: Ajouter le filtre de manière conditionnelle
-    if (!isAdmin) {
-        // Pour les utilisateurs non-admins, on filtre par leur user_id
-        query = query.eq('user_id', id);
+    // Étape 2 : Créer la requête en fonction du rôle
+    if (isAdmin) {
+        // Pour un admin, on sélectionne TOUTES les générations
+        query = supabase.from('generations').select('*');
+    } else {
+        // Pour un utilisateur normal, on sélectionne uniquement ses générations
+        query = supabase.from('generations').select('*').eq('user_id', id);
     }
 
-    // Ajout des conditions de filtre de date (inchangées)
+    // Étape 3 : Ajouter les filtres de date et le tri, communs aux deux requêtes
+    query = query.order('created_at', { ascending: false });
     if (start) {
         query = query.gte('created_at', start);
     }
@@ -86,12 +90,12 @@ function Historique() {
         setGenerations(data);
     }
     setLoading(false);
-  };
+};
 
   const formatTimestamp = (timestamp) => {
     const date = new Date(timestamp);
     const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Les mois sont indexés de 0, donc +1
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
 
     return `${day}/${month}/${year}`;
