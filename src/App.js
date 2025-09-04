@@ -9,6 +9,7 @@ import History from './pages/History';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoutes';
 import Admin from './pages/Admin';
+import Primary from './pages/Primary';
 
 function App() {
   return (
@@ -30,6 +31,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Generator />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path='/primary' 
+            element={
+              <ProtectedRoute>
+                <Primary />
               </ProtectedRoute>
             } 
           />

@@ -149,3 +149,13 @@
   margin-top: 20px;
   color: gray;
 }
+
+.gen-links {
+  margin-top: 20px;
+}
+
+.gen-links a{
+  color: black;
+  font-weight: bold;
+  font-size: 14px;
+}

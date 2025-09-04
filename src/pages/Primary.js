@@ -11,7 +11,7 @@ import './styles/styles.css';
 import './styles/generator.css';
 import { Link } from 'react-router-dom';
 
-function Generator() {
+function Primary() {
   const [file, setFile] = useState(null);
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
@@ -40,9 +40,8 @@ function Generator() {
   }, []);
 
   const allMatiere = [
-    "Mathématiques", "Français", "Anglais", "Physique-Chimie",
-    "SVT", "Histoire-Géographie", "Philosophie", "Éducation Civique",
-    "EPS", "Dessin", "Musique", "Informatique"
+    "Mathématiques", "Français", "Anglais", "EDHC",
+    "SVT", "Histoire-Géographie", "Philosophie"
   ];
 
   const handleFileUpload = (event) => {
@@ -191,7 +190,7 @@ function Generator() {
 
       for (const eleve of data) {
         for (const matiere of allMatiere) {
-          if (stickersOnPage >= 12) {
+          if (stickersOnPage >= 7) {
             doc.addPage();
             currentX = marginX;
             currentY = marginY;
@@ -352,7 +351,7 @@ function Generator() {
         </div>
         <div className="body">
           <div className="header">
-            <Header title="Générateur d'autocollants - Secondaire" content="Importez votre fichier Excel et générez automatiquement 1 PDF A4 par élève (12 autocollants identiques)" date="" />
+            <Header title="Générateur d'autocollants - Primaire" content="Importez votre fichier Excel et générez automatiquement 1 PDF A4 par élève (12 autocollants identiques)" date="" />
           </div>
           <div className="generator">
             <div className="model">
@@ -461,9 +460,9 @@ function Generator() {
               Fichier Excel [ nom : YAO, prenoms : Jean ] - Nom image : YAO Jean.
               </p>
             </div>
-
+            
             <div className="gen-links">
-              <Link to="/primary">Générations Ecole Primaire</Link>
+                <Link to="/generator">Générations sécondaire</Link>
             </div>
           </div>
         </div>
@@ -472,4 +471,4 @@ function Generator() {
   );
 }
 
-export default Generator;
+export default Primary;

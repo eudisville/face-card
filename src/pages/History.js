@@ -61,7 +61,7 @@ function Historique() {
     const isAdmin = profile?.roles === 'admin';
     let query;
 
-    // Étape 2 : Créer la requête en fonction du rôle
+    // Créer la requête en fonction du rôle
     if (isAdmin) {
         // Pour un admin, on sélectionne TOUTES les générations
         query = supabase.from('generations').select('*');
@@ -70,7 +70,7 @@ function Historique() {
         query = supabase.from('generations').select('*').eq('user_id', id);
     }
 
-    // Étape 3 : Ajouter les filtres de date et le tri, communs aux deux requêtes
+    // Ajouter les filtres de date et le tri, communs aux deux requêtes
     query = query.order('created_at', { ascending: false });
     if (start) {
         query = query.gte('created_at', start);
